@@ -1,18 +1,9 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css");
 :root {
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 16px;
-  --green: #6aaa64;
-  --darkendGreen: #538d4e;
-  --yellow: #c9b458;
-  --darkendYellow: #b59f3b;
-  --lightGray: #d8d8d8;
-  --gray: #86888a;
-  --darkGray: #939598;
-  --white: #fff;
-  --black: #212121;
-  --orange: #f5793a;
-  --blue: #85c0f9;
+  font-size: calc(16px + .2vw);
+  --color-success: #6aaa64;
+  --color-failure: #aa6a64;
   --color-tone-1: #1a1a1b;
   --color-tone-2: #787c7e;
   --color-tone-3: #878a8c;
@@ -20,15 +11,12 @@
   --color-tone-5: #edeff1;
   --color-tone-6: #f6f7f8;
   --color-tone-7: #ffffff;
-  --color-correct: var(--green);
-  --tile-text-color: var(--color-tone-7);
-  --color-background: var(--color-tone-7);
-  --color-background-t: #ffffffaa;
   --factor: 1;
 }
 
 .nightmode {
-  --blue: #5590c9;
+  --color-success: #538d4e;
+  --color-failure: #8d534e;
   --color-tone-1: #d7dadc;
   --color-tone-2: #818384;
   --color-tone-3: #565758;
@@ -36,24 +24,69 @@
   --color-tone-5: #272729;
   --color-tone-6: #1a1a1b;
   --color-tone-7: #121213;
-  --color-correct: var(--darkendGreen);
-  --tile-text-color: var(--color-tone-1);
-  --color-background: var(--color-tone-7);
-  --color-background-t: #121213aa;
 }
+
 * {
   transition: color 0.5s ease-out, background-color 0.5s ease-out;
 }
 
 body {
-  background-color: var(--color-background);
+  background-color: var(--color-tone-7);
   margin: 0;
   padding: 0;
   color: var(--color-tone-1);
+  padding: 0 10vw;
 }
 
-.header, main {
+#header, #main {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#menu {
+  width: auto;
+}
+
+#main {
+  margin-top: 5vh;
+}
+
+#question {
+  font-size: larger;
+  margin-bottom: 2vh;
+}
+#answers {
+  list-style: none;
+  padding-left: 0;
+}
+.answer {
+  padding: 2vw 5vw;
+  margin: 1vh 0;
+  background: var(--color-tone-6);
+  width: 80vw;
+  border: 1px solid var(--color-tone-2);
+  cursor: pointer;
+}
+#info {
+  font-size: smaller;
+  margin: 2vh 0;
+  width: 100%;
+}
+#category {
+  float: left;
+}
+#current-diff {
+  float: right;
+}
+
+#status {
+  position: fixed;
+  bottom: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(50%);
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+  z-index: 30000;
 }

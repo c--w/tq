@@ -47,7 +47,9 @@ body {
 #menu {
   width: auto;
 }
-
+table {
+  width: 100%;
+}
 #main {
   margin-top: 5vh;
 }
@@ -61,7 +63,7 @@ body {
   padding-left: 0;
 }
 .answer {
-  padding: 2vw 5vw;
+  padding: 1vw;
   margin: 1vh 0;
   background: var(--color-tone-6);
   min-width: 50vw;
@@ -82,11 +84,33 @@ body {
 
 #status {
   position: fixed;
-  bottom: 50%;
+  bottom: 20%;
   left: 50%;
   transform: translateX(-50%) translateY(50%);
   cursor: pointer;
   padding: 0;
   background-color: transparent;
   z-index: 30000;
+}
+
+#game-header {
+    display: inline-grid;
+    grid-template-columns: 1fr 5fr 1fr;
+    justify-items: stretch;
+}
+
+#game-header div {
+  place-self: center;
+}
+
+
+
+.form-select,
+.form-control,
+.btn,
+.input-group-text,
+input {
+  color: var(--color-tone-1);
+  background-color: var(--color-tone-6);
+  border-color: var(--color-tone-4);
 }

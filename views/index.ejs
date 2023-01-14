@@ -17,8 +17,6 @@
 <body>
   <div id="header">
     <div id="menu" class="input-group">
-      <button id="help" class="btn btn-outline-secondary" onclick="help()"><i
-          class="bi bi-question-circle"></i></button>
       <select class="form-select" id="gamemode" name="gamemode">
         <option value="0">Practice</option>
         <option value="10">Multiplayer</option>
@@ -29,22 +27,45 @@
         <option value="medium">Medium</option>
         <option value="hard">Hard</option>
       </select>
+      <select class="form-select multiplayer" id="num_questions" name="num_questions">
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+      <button id="nightmode" class="btn btn-outline-secondary" onclick="$('body').toggleClass('nightmode')">
+        <i class="bi bi-moon"></i>
+      </button>
     </div>
   </div>
+  <div id="nickname-div" class="help" role="alert" style="display: none; ">
+    <div class="input-group" style="width: auto; margin-top: 2px;">
+      <input id="nickname" class="form-control" type="text" placeholder="name" style="width: 250px">
+      <button class="btn btn-primary" name="Copy" onclick="setNickname()"><i class="bi bi-check-square"></i></button>
+    </div>
+  </div>
+
   <div id="main">
-    <div id="question">Question</div>
+    <div id="question"></div>
     <ul id="answers">
-      <li class="answer">Answer 1</li>
-      <li class="answer">Answer 2</li>
-      <li class="answer">Answer 3</li>
-      <li class="answer">Answer 4</li>
     </ul>
     <div id="info">
       <span id="category">Category: <i></i></span>
       <span id="current-diff">Difficulty: <i></i></span>
     </div>
   </div>
+  <div id="room-info" class="multiplayer" style="display: none; text-align: center;">
+    <div id="game-header">
+      <div id="round"></div>
+      <div>
+        <button id="start" class="btn btn-primary" name="Start" onclick="startRoom()">
+          Start <i class="bi bi-flag"></i></button>
+      </div>
+      <div id="time-left"></div>
+    </div>
+    <hr>
+    <div id="players-info"></div>
+  </div>
   <div id="status" role="alert" title="Klik to remove" onclick="$('#status').empty();">
 
-   <script src="/js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>

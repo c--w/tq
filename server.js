@@ -8,11 +8,13 @@ const fs = require('fs');
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const TPQ = 10;
 
 const questions = require("./questions.json");
 
 const port = process.env.PORT || 8080;
 var sessions = {};
+var rooms = {};
 
 function initServer() {
     const app = express();
@@ -24,6 +26,11 @@ function initServer() {
     app.get('/', renderIndex);
     app.get('/question', getQuestion);
     app.get('/check-answer', checkAnswer);
+    app.post('/enter-room', enterRoom);
+    app.post('/leave-room', leaveRoom);
+    app.post('/start-room', startRoom);
+    app.get('/room', roomInfo);
+    app.post('/setnick', setNick);
 
     let server = http.createServer(app);
     server.listen(port);
@@ -37,28 +44,97 @@ function renderIndex(req, res) {
 
 function getQuestion(req, res) {
     let user = getUser(req);
-    let gamemode = req.query.gamemode || 0;
-    let difficulty = req.query.difficulty || 'mixed';
-    let q = getRandomQuestion(difficulty);
-    user.current_question = q;
-    let rq = {...q};
+    let gamemode = req.cookies.gamemode || 0;
+    let difficulty = req.cookies.difficulty || 'mixed';
+    let q;
+    if (gamemode < 10) {
+        q = getRandomQuestion(difficulty);
+        user.current_question = q;
+    } else {
+        let room = getRoom(req);
+        q = room.questions[user.round];
+    }
+    sendResponse(convertQuestion(q), res);
+}
+
+function convertQuestion(q) {
+    let rq = { ...q };
+    console.log(q);
     rq.answers = [...q.incorrect];
     rq.answers.push(q.correct);
     rq.answers.sort(() => Math.random() - 0.5);
     delete rq.correct;
     delete rq.incorrect;
     console.log(JSON.stringify(q));
-    sendResponse(rq, res);
+    return rq;
+}
+
+function setNick(req, res) {
+    let user = getUser(req);
+    user.nickname = req.cookies.nickname;
+    console.log('Set nickname:', user.nickname)
+    sendResponse({}, res);
+}
+function roomInfo(req, res) {
+    let user = getUser(req);
+    let room = getRoom(req);
+    let room_clone = {...room};
+    room_clone.users = Array.from(room.users);
+    sendResponse(room_clone, res);
+}
+
+function enterRoom(req, res) {
+    let user = getUser(req);
+    let room = getRoom(req);
+    if (!room.users.has(user)) {
+        user.points = 0;
+        user.round = 0;
+        room.users.add(user);
+    }
+    sendResponse({}, res);
+}
+function leaveRoom(req, res) {
+    let user = getUser(req);
+    let room = getRoom(req);
+    if (room.users.has(user)) {
+        room.users.delete(user);
+    }
+    console.log('User left room: ', user.nickname);
+    sendResponse({}, res);
+}
+
+function startRoom(req, res) {
+    let user = getUser(req);
+    let room = getRoom(req);
+    initRoom(room);
+    room.started = 1;
+    room.start_time = Date.now();
+    console.log('Game started in room: ', room.id);
+    setTimeout((room) => { room.started = 0 }, room.game_duration, room);
+    sendResponse({}, res);
 }
 
 function checkAnswer(req, res) {
     let user = getUser(req);
-    let gamemode = req.query.gamemode || 0;
+    let gamemode = req.cookies.gamemode || 0;
     let a = req.query.answer;
-    if(a != user.current_question.correct) {
+    let correct;
+    if (gamemode < 10) {
+        correct = user.current_question.correct;
     } else {
+        let room = getRoom(req);
+        correct = room.questions[user.round].correct;
+        if (a == correct) {
+            user.points += getPoints(room);
+        }
+        user.round++;
     }
-    sendResponse({'answer': user.current_question.correct}, res);
+    sendResponse({ 'answer': correct }, res);
+}
+
+function getPoints(room) {
+    // TODO
+    return 10;
 }
 
 function getRandomQuestion(d) {
@@ -73,13 +149,15 @@ function randomElem(a) {
 }
 
 function getUser(req) {
-    let uid = req.cookies.uid || req.query.uid || req.body.uid;
+    let uid = req.cookies.uid;
+    let nickname = req.cookies.nickname;
     if (!sessions[uid]) {
         console.log("New user:", uid);
-        sessions[uid] = { nickname: 'Player1' };
+        sessions[uid] = {};
         sessions[uid].uid = uid;
         console.log("Sessions:", Object.keys(sessions).length);
     }
+    sessions[uid].nickname = nickname || 'Player';
     sessions[uid].time = Date.now();
     return sessions[uid];
 }
@@ -91,6 +169,41 @@ function sendResponse(obj, res) {
     res.write(JSON.stringify(obj));
     res.end();
 }
+
+function getRoom(req) {
+    let gamemode = req.cookies.gamemode || 10;
+    let difficulty = req.cookies.difficulty || 'mixed';
+    let num_questions = req.cookies.num_questions || 20;
+    var room_id = `gm:${gamemode} diff:${difficulty} num:${num_questions}`;
+    let room = rooms[room_id];
+    if (!room) {
+        console.log('Create room: ', room_id);
+        room = {};
+        room.id = room_id;
+        room.gamemode = gamemode;
+        room.difficulty = difficulty;
+        room.num_questions = num_questions;
+        room.users = new Set();
+        initRoom(room);
+        rooms[room_id] = room;
+    }
+    return room;
+}
+
+function initRoom(room) {
+    room.questions = new Array(room.num_questions);
+    for (let i = 0; i < room.num_questions; i++) {
+        room.questions[i] = getRandomQuestion(room.difficulty);
+    }
+    room.users.forEach(u => {
+        u.points = 0;
+        u.round = 0
+    });
+    room.start_time = 0;
+    room.started = 0;
+    room.game_duration = room.num_questions * TPQ *1000;
+}
+
 
 initServer();
 

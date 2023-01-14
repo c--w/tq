@@ -59,7 +59,6 @@ function getQuestion(req, res) {
 
 function convertQuestion(q) {
     let rq = { ...q };
-    console.log(q);
     rq.answers = [...q.incorrect];
     rq.answers.push(q.correct);
     rq.answers.sort(() => Math.random() - 0.5);

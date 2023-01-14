@@ -107,12 +107,12 @@ function processRoom(room) {
     fillRoomInfo(room);
     if (started != room.started) {
         if (room.started) {
-            updateStatus("Game started");
+            updateStatus("Game started", 1000);
             $('#start').hide();
             round = 0;
             getQuestion();
         } else {
-            updateStatus("Game finished");
+            updateStatus("Game finished", 1000);
             $('#start').show();
         }
     }
@@ -124,8 +124,11 @@ function fillRoomInfo(room) {
     let me = users.find(u => u.uid = uid);
     if (room.started) {
         let remaining = Math.floor((room.game_duration - Date.now() + room.start_time) / 1000);
-        $('#time-left').text(remaining);
-        $('#round').text((me.round + 1) + '/' + num_questions);
+        $('#time-left').text(remaining + 's');
+        let round = me.round + 1;
+        if(round > num_questions)
+            round = num_questions;
+        $('#round').text(round + '/' + num_questions);
     } else {
         $('#time-left').text(0);
         $('#round').text(0 + '/' + num_questions);
@@ -167,7 +170,7 @@ function fillQuestion(data) {
 
 function checkAnswer() {
     if(gamemode>=10 && round>=num_questions) {
-        updateStatus("You finished this game");
+        updateStatus("You finished this game", 1000);
         return;
     }
     let el = $(this);

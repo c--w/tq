@@ -161,6 +161,16 @@ function getUser(req) {
     return sessions[uid];
 }
 
+function checkRoomUsers(room) {
+    Array.from(room.users).forEach(u => {
+        if(Date.now()-u.time > 1000 * 30) {
+            room.users.delete(u);
+            console.log('User kicked', u.nickname);
+        }
+    })
+    setTimeout(checkRoomUsers, 10000, room);
+}
+
 function sendResponse(obj, res) {
     res.writeHead(200, {
         "Content-Type": "application/json"
@@ -185,6 +195,7 @@ function getRoom(req) {
         room.users = new Set();
         initRoom(room);
         rooms[room_id] = room;
+        checkRoomUsers(room);
     }
     return room;
 }

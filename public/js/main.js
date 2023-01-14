@@ -37,7 +37,7 @@ function init() {
     $('#gamemode').on('change', changeGamemode);
     $('#difficulty').on('change', changeDifficulty);
     $('#num_questions').on('change', changeNumQuestion);
-    if (nickname == 'Player') {
+    if (nickname.startsWith('Player')) {
         $('#nickname-div').show();
     }
     fillQuestion(default_question);

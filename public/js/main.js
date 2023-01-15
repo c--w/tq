@@ -39,7 +39,8 @@ function init() {
     $('#num_questions').on('change', changeNumQuestion);
     if (nickname.startsWith('Player')) {
         $('#nickname-div').show();
-    }
+    } else 
+        setNickname();
     fillQuestion(default_question);
     changeGamemode();
 }
@@ -204,7 +205,7 @@ function setNickname() {
     nickname = $("#nickname").val();
     setCookie("nickname", nickname, 730);
     $("#nickname-div").hide();
-    $.post("/setnick").done(function (data) { });
+    $.post("/setnick", {nickname: nickname}).done(function (data) { });
 }
 
 

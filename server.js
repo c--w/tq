@@ -6,6 +6,7 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const express = require("express");
+const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const TPQ = 10;
@@ -17,10 +18,14 @@ var sessions = {};
 var rooms = {};
 
 function initServer() {
-    const app = express();
     app.use('/', express.static(path.join(__dirname, "public")));
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
+    app.use(
+        bodyParser.urlencoded({
+            extended: true
+        })
+    );
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.get('/', renderIndex);
@@ -70,14 +75,14 @@ function convertQuestion(q) {
 
 function setNick(req, res) {
     let user = getUser(req);
-    user.nickname = req.cookies.nickname;
-    console.log('Set nickname:', user.nickname)
+    user.nickname = req.body.nickname;
+    console.log('Set nickname:', user.nickname, req.cookies)
     sendResponse({}, res);
 }
 function roomInfo(req, res) {
     let user = getUser(req);
     let room = getRoom(req);
-    let room_clone = {...room};
+    let room_clone = { ...room };
     room_clone.users = Array.from(room.users);
     sendResponse(room_clone, res);
 }
@@ -97,8 +102,8 @@ function leaveRoom(req, res) {
     let room = getRoom(req);
     if (room.users.has(user)) {
         room.users.delete(user);
+        console.log('User left room: ', user.nickname);
     }
-    console.log('User left room: ', user.nickname);
     sendResponse({}, res);
 }
 
@@ -128,6 +133,8 @@ function checkAnswer(req, res) {
         }
         user.round++;
     }
+    console.log("Answer: ", a == correct);
+
     sendResponse({ 'answer': correct }, res);
 }
 
@@ -149,21 +156,20 @@ function randomElem(a) {
 
 function getUser(req) {
     let uid = req.cookies.uid;
-    let nickname = req.cookies.nickname;
     if (!sessions[uid]) {
         console.log("New user:", uid);
         sessions[uid] = {};
         sessions[uid].uid = uid;
         console.log("Sessions:", Object.keys(sessions).length);
+        sessions[uid].nickname = 'Player';
     }
-    sessions[uid].nickname = nickname || 'Player';
     sessions[uid].time = Date.now();
     return sessions[uid];
 }
 
 function checkRoomUsers(room) {
     Array.from(room.users).forEach(u => {
-        if(Date.now()-u.time > 1000 * 30) {
+        if (Date.now() - u.time > 1000 * 30) {
             room.users.delete(u);
             console.log('User kicked', u.nickname);
         }
@@ -173,7 +179,7 @@ function checkRoomUsers(room) {
 
 function sendResponse(obj, res) {
     res.writeHead(200, {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json; charset=utf-8"
     });
     res.write(JSON.stringify(obj));
     res.end();
@@ -211,7 +217,7 @@ function initRoom(room) {
     });
     room.start_time = 0;
     room.started = 0;
-    room.game_duration = room.num_questions * TPQ *1000;
+    room.game_duration = room.num_questions * TPQ * 1000;
 }
 
 

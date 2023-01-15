@@ -183,7 +183,7 @@ function checkAnswer() {
             updateStatus('Correct!', 1000)
             el.css('background-color', 'var(--color-success)');
         } else {
-            updateStatus('Wrong.<br>Correct answer was: ' + data.answer, 2000);
+            updateStatus('Wrong. Answer was:<br> ' + data.answer, 2000);
             el.css('background-color', 'var(--color-failure)');
         }
         if(gamemode<10)

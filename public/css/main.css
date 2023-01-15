@@ -1,8 +1,6 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css");
 
 :root {
-  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: calc(16px + .2vw);
   --color-success: #6aaa64;
   --color-failure: #aa6a64;
   --color-tone-1: #1a1a1b;
@@ -32,6 +30,8 @@
 }
 
 body {
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: calc(18px + .2vw);
   background-color: var(--color-tone-7);
   margin: 0;
   padding: 0;
@@ -75,11 +75,11 @@ table {
 }
 
 .answer {
-  padding: 1vw;
+  padding: 1vh 2vw;
   margin: 1vh 0;
   background: var(--color-tone-6);
   min-width: 50vw;
-  border: 1px solid var(--color-tone-2);
+  border: 1px solid var(--color-tone-4);
   cursor: pointer;
 }
 
@@ -106,16 +106,20 @@ table {
 }
 
 #status {
+  width: 100%;
+  text-align: center;
   position: fixed;
   bottom: 20%;
-  left: 50%;
-  transform: translateX(-50%) translateY(50%);
+  left: 0;
   cursor: pointer;
   padding: 0;
   background-color: transparent;
   z-index: 30000;
 }
 
+#status div {
+  display: inline-block;
+}
 #game-header {
   display: inline-grid;
   grid-template-columns: 1fr 5fr 1fr;

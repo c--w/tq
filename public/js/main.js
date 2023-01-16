@@ -231,7 +231,7 @@ function updateStatus(text, timeout) {
         console.log("updateStatus", text);
         if (text && typeof text === "object") text = JSON.stringify(text);
         var div = $(
-            '<div class="alert" style="opacity:0; margin: 2px; position: relative; padding: 12px 12px 12px 30px">'
+            '<div class="alert" style="opacity:0; margin: 2px; position: relative; padding: 0.5rem 1rem 0.5rem 2rem">'
         );
         div.on("click", function () {
             this.remove();

@@ -104,7 +104,8 @@ function getQuestion() {
     $.get("/question", fillQuestion);
 }
 
-function processRoom(room) {
+function processRoom(r) {
+    room = r;
     fillRoomInfo(room);
     if (started != room.started) {
         if (room.started) {
@@ -172,6 +173,10 @@ function fillQuestion(data) {
 function checkAnswer() {
     if(gamemode>=10 && round>=num_questions) {
         updateStatus("You finished this game", 1000);
+        return;
+    }
+    if(gamemode>=10 && !room.started) {
+        updateStatus("Game finished", 1000);
         return;
     }
     let el = $(this);

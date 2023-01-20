@@ -117,6 +117,22 @@ table {
   z-index: 30000;
 }
 
+#stats {
+  padding: 0 1vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  font-size: smaller;
+  width: 100%;
+  position: fixed;
+  bottom: 0%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: var(--color-tone-6);
+}
+
 #status div {
   display: inline-block;
 }

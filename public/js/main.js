@@ -21,6 +21,11 @@ setCookie("difficulty", difficulty, 730);
 var num_questions = Number(getCookie("num_questions") || 20);
 setCookie("num_questions", num_questions, 730);
 
+var stats = JSON.parse(localStorage.getItem('tq-stats') || '{"n": 0, "c": 0}');
+var stats_session = {n: 0, c: 0};
+$('#session-stats i').text(`${stats_session.c} / ${stats_session.n}`)
+$('#alltime-stats i').text(`${stats.c} / ${stats.n}`)
+
 var started = 0;
 var round = 0;
 var room;
@@ -184,10 +189,15 @@ function checkAnswer() {
     el.css('background-color', 'var(--color-tone-3)');
     let url = `/check-answer?answer=${a}`;
     $.get(url, (data) => {
+        stats.n++;
+        stats_session.n++;
         if (a == data.answer) {
             updateStatus('Correct!', 1000)
             el.css('background-color', 'var(--color-success)');
-        } else {
+            stats.c++;
+            stats_session.c++;
+            localStorage.setItem('tq-stats', JSON.stringify(stats));
+            } else {
             updateStatus('Wrong. Answer was:<br> ' + data.answer, 2000);
             el.css('background-color', 'var(--color-failure)');
         }
@@ -198,6 +208,8 @@ function checkAnswer() {
             if(round<num_questions)
                 getQuestion();
         }
+        $('#session-stats i').text(`${stats_session.c} / ${stats_session.n}`)
+        $('#alltime-stats i').text(`${stats.c} / ${stats.n}`)
     });
 }
 
